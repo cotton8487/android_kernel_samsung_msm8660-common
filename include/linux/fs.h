@@ -417,6 +417,7 @@ struct fscrypt_policy {
 #include <linux/prio_tree.h>
 #include <linux/init.h>
 #include <linux/pid.h>
+#include <linux/bug.h>
 #include <linux/mutex.h>
 #include <linux/capability.h>
 #include <linux/semaphore.h>
