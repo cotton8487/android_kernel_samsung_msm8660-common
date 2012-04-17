@@ -1307,14 +1307,23 @@ static void dapm_seq_run(struct snd_soc_dapm_context *dapm,
 	struct snd_soc_dapm_context *cur_dapm = NULL;
 	int ret, i;
 	int *sort;
+	int nWidgets;
 
 	if (power_up)
 		sort = dapm_up_seq;
 	else
 		sort = dapm_down_seq;
 
+	nWidgets = ARRAY_SIZE(dapm_up_seq);
+
 	list_for_each_entry_safe(w, n, list, power_list) {
 		ret = 0;
+
+		if (!w->name)
+			continue;
+
+		if (!((w->id >= 0) && (w->id < nWidgets)))
+			continue;
 
 		/* Do we need to apply any queued changes? */
 		if (sort[w->id] != cur_sort || w->reg != cur_reg ||
