@@ -1,5 +1,5 @@
 /*
- *  snd_compress_params.h - codec types and parameters for compressed data
+ *  compress_params.h - codec types and parameters for compressed data
  *  streaming interface
  *
  *  Copyright (C) 2011 Intel Corporation
@@ -48,12 +48,22 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  *
  */
-
+#ifndef __SND_COMPRESS_PARAMS_H
+#define __SND_COMPRESS_PARAMS_H
 
 /* AUDIO CODECS SUPPORTED */
 #define MAX_NUM_CODECS 32
 #define MAX_NUM_CODEC_DESCRIPTORS 32
 #define MAX_NUM_BITRATES 32
+
+/* compressed TX */
+#define MAX_NUM_FRAMES_PER_BUFFER 1
+#define COMPRESSED_META_DATA_MODE 0x10
+#define META_DATA_LEN_BYTES 36
+#define Q6_AC3_DECODER	0x00010BF6
+#define Q6_EAC3_DECODER 0x00010C3C
+#define Q6_DTS		0x00010D88
+#define Q6_DTS_LBR	0x00010DBB
 
 /* Codecs are listed linearly to allow for extensibility */
 #define SND_AUDIOCODEC_PCM                   ((__u32) 0x00000001)
@@ -69,6 +79,13 @@
 #define SND_AUDIOCODEC_IEC61937              ((__u32) 0x0000000B)
 #define SND_AUDIOCODEC_G723_1                ((__u32) 0x0000000C)
 #define SND_AUDIOCODEC_G729                  ((__u32) 0x0000000D)
+#define SND_AUDIOCODEC_AC3                   ((__u32) 0x0000000E)
+#define SND_AUDIOCODEC_DTS                   ((__u32) 0x0000000F)
+#define SND_AUDIOCODEC_AC3_PASS_THROUGH      ((__u32) 0x00000010)
+#define SND_AUDIOCODEC_WMA_PRO               ((__u32) 0x00000011)
+#define SND_AUDIOCODEC_DTS_PASS_THROUGH      ((__u32) 0x00000012)
+#define SND_AUDIOCODEC_DTS_LBR               ((__u32) 0x00000013)
+#define SND_AUDIOCODEC_DTS_TRANSCODE_LOOPBACK ((__u32) 0x00000014)
 
 /*
  * Profile and modes are listed with bit masks. This allows for a
@@ -234,6 +251,11 @@
 
 struct snd_enc_wma {
 	__u32 super_block_align; /* WMA Type-specific data */
+	__u32 bits_per_sample;
+	__u32 channelmask;
+	__u32 encodeopt;
+	__u32 encodeopt1;
+	__u32 encodeopt2;
 };
 
 
@@ -258,7 +280,7 @@ struct snd_enc_wma {
  */
 
 struct snd_enc_vorbis {
-	int quality;
+	__s32 quality;
 	__u32 managed;
 	__u32 max_bit_rate;
 	__u32 min_bit_rate;
@@ -307,7 +329,7 @@ struct snd_enc_flac {
 
 struct snd_enc_generic {
 	__u32 bw;	/* encoder bandwidth */
-	int reserved[15];
+	__s32 reserved[15];
 };
 
 union snd_codec_options {
@@ -327,6 +349,7 @@ union snd_codec_options {
  * @profiles: Supported profiles. See SND_AUDIOPROFILE defines.
  * @modes: Supported modes. See SND_AUDIOMODE defines
  * @formats: Supported formats. See SND_AUDIOSTREAMFORMAT defines
+ * @min_buffer: Minimum buffer size handled by codec implementation
  * @reserved: reserved for future use
  *
  * This structure provides a scalar value for profiles, modes and stream
@@ -348,7 +371,8 @@ struct snd_codec_desc {
 	__u32 profiles;
 	__u32 modes;
 	__u32 formats;
-	__u32 reserved[16];
+	__u32 min_buffer;
+	__u32 reserved[15];
 };
 
 /** struct snd_codec
@@ -390,3 +414,5 @@ struct snd_codec {
 	union snd_codec_options options;
 	__u32 reserved[3];
 };
+
+#endif
