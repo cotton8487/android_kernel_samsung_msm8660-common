@@ -23,7 +23,6 @@
 #include <sound/core.h>
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
-#include <sound/soc-dsp.h>
 #include <sound/pcm.h>
 #include <sound/jack.h>
 #include <asm/mach-types.h>
@@ -987,13 +986,6 @@ static int msm8960_audrx_init(struct snd_soc_pcm_runtime *rtd)
 		top_spk_pamp_gpio = (PM8921_GPIO_PM_TO_SYS(19));
 		bottom_spk_pamp_gpio = (PM8921_GPIO_PM_TO_SYS(18));
 	}
-
-	rtd->pmdown_time = 0;
-
-	err = snd_soc_add_controls(codec, tabla_msm8960_controls,
-				ARRAY_SIZE(tabla_msm8960_controls));
-	if (err < 0)
-		return err;
 
 	snd_soc_dapm_new_controls(dapm, msm8960_dapm_widgets,
 				ARRAY_SIZE(msm8960_dapm_widgets));
