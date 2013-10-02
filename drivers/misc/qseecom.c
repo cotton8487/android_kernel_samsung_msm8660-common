@@ -484,7 +484,7 @@ static int qseecom_set_client_mem_param(struct qseecom_dev_handle *data,
 	uint32_t len;
 
 	/* Copy the relevant information needed for loading the image */
-	if (__copy_from_user(&req, (void __user *)argp, sizeof(req)))
+	if (copy_from_user(&req, (void __user *)argp, sizeof(req)))
 		return -EFAULT;
 
 	/* Get the handle of the shared fd */
@@ -588,7 +588,7 @@ static int qseecom_load_app(struct qseecom_dev_handle *data, void __user *argp)
 	bool first_time = false;
 
 	/* Copy the relevant information needed for loading the image */
-	if (__copy_from_user(&load_img_req,
+	if (copy_from_user(&load_img_req,
 				(void __user *)argp,
 				sizeof(struct qseecom_load_img_req))) {
 		pr_err("copy_from_user failed\n");
