@@ -123,7 +123,7 @@ extern unsigned int get_hw_rev(void);
 enum {
 	SGH_I727,
 	SGH_T989,
-	XXX_XXXX,
+	SC_03D,
 };
 
 static int model;
@@ -162,7 +162,7 @@ static int k3dh_get_hw_model(void)
 	} else if (strncmp(data, "SGH-T989", 8) == 0) {
 		model = SGH_T989;
 	} else {
-		model = XXX_XXXX;
+		model = SC_03D;
 	}
 
 	return err;
@@ -237,13 +237,7 @@ static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
 		acc->y = -(acc->y);
  	}
 #endif
-#elif defined (CONFIG_JPN_MODEL_SC_03D)	
-	if (get_hw_rev() >= 0x00 ) // real 0.0
-	{
-		acc->x = -(acc->x);
-		acc->y = (acc->y);
-		acc->z = -(acc->z);
-	}
+
 #elif defined(CONFIG_EUR_MODEL_GT_I9210)
 	{
 		s16 temp = acc->x;
@@ -292,6 +286,13 @@ static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
 		acc->x = -(acc->y);
 		acc->y = (temp);
 		acc->z = (acc->z);
+	} else if (model == SC_03D) {
+	    if (get_hw_rev() >= 0x00 ) // real 0.0
+	    {
+		    acc->x = -(acc->x);
+		    acc->y = (acc->y);
+		    acc->z = -(acc->z);
+	    }
 	}
 #endif
 
