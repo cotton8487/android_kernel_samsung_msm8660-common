@@ -1656,7 +1656,7 @@ config USA_MODEL_SGH_T989
 	bool "USA ATT SGH-T989"
 
 config TARGET_LOCALE_JPN
-	bool "Locale JPN "
+	bool "Locale JPN"
 	help
 	  Support JPN Board
 
