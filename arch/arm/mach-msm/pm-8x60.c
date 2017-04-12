@@ -19,6 +19,7 @@
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/ktime.h>
+#include <linux/cpu.h>
 #include <linux/pm.h>
 #include <linux/pm_qos_params.h>
 #include <linux/proc_fs.h>
@@ -804,7 +805,7 @@ int msm_pm_idle_prepare(struct cpuidle_device *dev)
 			if (!allow)
 				break;
 
-			if (num_online_cpus() > 1) {
+			if (num_online_cpus() > 1 || cpu_maps_is_updating()) {
 				allow = false;
 				break;
 			}
