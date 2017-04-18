@@ -118,55 +118,13 @@ extern unsigned int get_hw_rev(void);
 #endif
 
 #ifdef CONFIG_TARGET_SERIES_CELOX
-#define MODEL_FILE_PATH	"/system/variant.prop"
-
 enum {
-	SGH_I727,
+	SGH_I727 = 0,
 	SGH_T989,
 	XXX_XXXX,
 };
 
-static int model;
-
-static int k3dh_get_hw_model(void)
-{
-	struct file *mod_filp = NULL;
-	char data[10];
-	int err = 0;
-	mm_segment_t old_fs;
-
-	old_fs = get_fs();
-	set_fs(KERNEL_DS);
-
-	mod_filp = filp_open(MODEL_FILE_PATH, O_RDONLY, 0666);
-	if (IS_ERR(mod_filp)) {
-		pr_err("[ACC] %s: Can't open model file\n", __func__);
-		set_fs(old_fs);
-		err = PTR_ERR(mod_filp);
-		return err;
-	}
-
-	err = mod_filp->f_op->read(mod_filp, (char *)data, sizeof(data), &mod_filp->f_pos);
-	if (err != sizeof(data)) {
-		pr_err("[ACC] %s: Can't read the data from file\n", __func__);
-		err = -EIO;
-	}
-
-	k3dh_dbgmsg("[ACC] %s: (%s)\n", __func__, data);
-	filp_close(mod_filp, current->files);
-	set_fs(old_fs);
-
-	/* Here we found the proper platform model of our phones */
-	if (strncmp(data, "SGH-I727", 8) == 0) {
-		model = SGH_I727;
-	} else if (strncmp(data, "SGH-T989", 8) == 0) {
-		model = SGH_T989;
-	} else {
-		model = XXX_XXXX;
-	}
-
-	return err;
-}
+static int model = SGH_I727;
 #endif
 
 static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
@@ -401,8 +359,6 @@ static int k3dh_open(struct inode *inode, struct file *file)
 {
 	int err = 0;
 	struct k3dh_data *k3dh = container_of(file->private_data, struct k3dh_data, k3dh_device);
-
-	k3dh_get_hw_model();
 
 	file->private_data = k3dh;
 	if (atomic_read(&k3dh->opened) == 0) {
@@ -693,11 +649,36 @@ static ssize_t k3dh_calibration_store(struct device *dev, struct device_attribut
 	return count;
 }
 
+#ifdef CONFIG_TARGET_SERIES_CELOX
+static ssize_t k3dh_model_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%d\n", model);
+}
+
+static ssize_t k3dh_model_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+{
+	int data_buf;
+	int ret = sscanf(buf, "%d", &data_buf);
+
+	if (ret != 1)
+		return -EINVAL;
+
+	model = data_buf;
+
+	return count;
+}
+#endif
+
 static DEVICE_ATTR(calibration, 0664,
 		   k3dh_calibration_show, k3dh_calibration_store);
 static DEVICE_ATTR(acc_file, 0664, k3dh_fs_read, NULL);
 
 static DEVICE_ATTR(acc_hwrev, 0664, hwrev_read_for_sensor, NULL);
+
+#ifdef CONFIG_TARGET_SERIES_CELOX
+static DEVICE_ATTR(model, 0664,
+		   k3dh_model_show, k3dh_model_store);
+#endif
 
 static int k3dh_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id)
@@ -795,7 +776,15 @@ static int k3dh_probe(struct i2c_client *client,
 		which = 0x08;
 		goto err_acc_device_create_file_hwrev;  
 	}
-	
+
+#ifdef CONFIG_TARGET_SERIES_CELOX
+	err = device_create_file(dev_t, &dev_attr_model);
+	if (err < 0) {
+		pr_err("%s: Failed to create device file(%s)\n",
+				__func__, dev_attr_model.attr.name);
+		device_remove_file(dev_t, &dev_attr_model);
+	}
+#endif
 	dev_set_drvdata(dev_t, k3dh);
 
 	/* creating device for calibration */
