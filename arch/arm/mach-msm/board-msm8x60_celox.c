@@ -4085,7 +4085,7 @@ static void __init msm8x60_init_dsps(void)
 #endif /* CONFIG_MSM_DSPS */
 
 /* Memory map */
-#define MSM_ION_HEAP_NUM	7
+#define MSM_ION_HEAP_NUM	6
 
 #ifdef CONFIG_FB_MSM_HDMI_MSM_PANEL
 #define MSM_FB_SIZE roundup((roundup((800 * 480 * 4), 4096) * 3) + \
@@ -4101,7 +4101,6 @@ static void __init msm8x60_init_dsps(void)
 #define MSM_RAM_CONSOLE_SIZE    SZ_1M
 
 #define MSM_ION_SF_SIZE		0x3700000
-#define MSM_ION_CAMERA_SIZE	0x1000000
 #define MSM_ION_MM_FW_SIZE	0x200000
 #define MSM_ION_MM_SIZE		0x3D00000
 #define MSM_ION_MFC_SIZE	0x100000
@@ -9541,14 +9540,6 @@ static struct ion_platform_heap msm8x60_heaps[] = {
 		.extra_data = (void *)&co_ion_pdata,
 	},
 	{
-		.id	= ION_CAMERA_HEAP_ID,
-		.type	= ION_HEAP_TYPE_CARVEOUT,
-		.name	= ION_CAMERA_HEAP_NAME,
-		.size	= MSM_ION_CAMERA_SIZE,
-		.memory_type = ION_EBI_TYPE,
-		.extra_data = &co_ion_pdata,
-	},
-	{
 		.id	= ION_AUDIO_HEAP_ID,
 		.type	= ION_HEAP_TYPE_CARVEOUT,
 		.name	= ION_AUDIO_HEAP_NAME,
@@ -9586,7 +9577,6 @@ static struct memtype_reserve msm8x60_reserve_table[] __initdata = {
 
 static void reserve_ion_memory(void)
 {
-	msm8x60_reserve_table[MEMTYPE_EBI1].size += MSM_ION_CAMERA_SIZE;
 	msm8x60_reserve_table[MEMTYPE_EBI1].size += MSM_ION_SF_SIZE;
 	msm8x60_reserve_table[MEMTYPE_EBI1].size += MSM_ION_AUDIO_SIZE;
 }
