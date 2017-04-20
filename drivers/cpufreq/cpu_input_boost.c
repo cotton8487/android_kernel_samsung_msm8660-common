@@ -69,6 +69,7 @@ static void set_fb_state(struct boost_policy *b, enum boost_status state);
 static void set_ib_status(struct boost_policy *b, enum boost_status status);
 static void unboost_all_cpus(struct boost_policy *b);
 static void unboost_cpu(struct ib_pcpu *pcpu);
+static void boost(void);
 
 static void ib_boost_main(struct work_struct *work)
 {
@@ -405,6 +406,32 @@ static void unboost_cpu(struct ib_pcpu *pcpu)
 	put_online_cpus();
 }
 
+static void boost()
+{
+	struct boost_policy *b = boost_policy_g;
+	enum boost_status ib_status;
+	bool do_boost;
+
+	spin_lock(&b->lock);
+	ib_status = b->ib.running;
+	do_boost = b->enabled && !b->fb.state && (ib_status != REBOOST);
+	spin_unlock(&b->lock);
+
+	if (!do_boost)
+		return;
+
+	/* Continuous boosting (from constant user input) */
+	if (ib_status == BOOST) {
+		set_ib_status(b, REBOOST);
+		queue_work(b->wq, &b->ib.reboost_work);
+		return;
+	}
+
+	set_ib_status(b, BOOST);
+
+	queue_work(b->wq, &b->ib.boost_work);
+}
+
 static ssize_t enabled_write(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t size)
 {
@@ -471,6 +498,21 @@ static ssize_t ib_duration_ms_write(struct device *dev,
 	return size;
 }
 
+static ssize_t ib_boost_write(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t size)
+{
+	unsigned long val;
+	int ret;
+
+	ret = kstrtoul(buf, 0, &val);
+	if (ret < 0)
+		return ret;
+
+	boost();
+
+	return size;
+}
+
 static ssize_t enabled_read(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -502,11 +544,13 @@ static DEVICE_ATTR(ib_freqs, 0644,
 			ib_freqs_read, ib_freqs_write);
 static DEVICE_ATTR(ib_duration_ms, 0644,
 			ib_duration_ms_read, ib_duration_ms_write);
+static DEVICE_ATTR(ib_boost, 0644, NULL, ib_boost_write);
 
 static struct attribute *cpu_ib_attr[] = {
 	&dev_attr_enabled.attr,
 	&dev_attr_ib_freqs.attr,
 	&dev_attr_ib_duration_ms.attr,
+	&dev_attr_ib_boost.attr,
 	NULL
 };
 
