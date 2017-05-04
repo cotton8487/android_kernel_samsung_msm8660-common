@@ -29,7 +29,6 @@
 #include <linux/mutex.h>
 #include <linux/shmem_fs.h>
 #include <linux/ashmem.h>
-#include <asm/cacheflush.h>
 
 #define ASHMEM_NAME_PREFIX "dev/ashmem/"
 #define ASHMEM_NAME_PREFIX_LEN (sizeof(ASHMEM_NAME_PREFIX) - 1)
@@ -669,30 +668,6 @@ done:
 }
 #endif
 
-static int ashmem_cache_op(struct ashmem_area *asma,
-	void (*cache_func)(unsigned long vstart, unsigned long length,
-				unsigned long pstart))
-{
-#ifdef CONFIG_OUTER_CACHE
-	unsigned long vaddr;
-#endif
-	mutex_lock(&ashmem_mutex);
-#ifndef CONFIG_OUTER_CACHE
-	cache_func(asma->vm_start, asma->size, 0);
-#else
-	for (vaddr = asma->vm_start; vaddr < asma->vm_start + asma->size;
-		vaddr += PAGE_SIZE) {
-		unsigned long physaddr;
-		physaddr = virtaddr_to_physaddr(vaddr);
-		if (!physaddr)
-			return -EINVAL;
-		cache_func(vaddr, PAGE_SIZE, physaddr);
-	}
-#endif
-	mutex_unlock(&ashmem_mutex);
-	return 0;
-}
-
 static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct ashmem_area *asma = file->private_data;
@@ -737,15 +712,6 @@ static long ashmem_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			sc.nr_to_scan = ret;
 			ashmem_shrink(&ashmem_shrinker, &sc);
 		}
-		break;
-	case ASHMEM_CACHE_FLUSH_RANGE:
-		ret = ashmem_cache_op(asma, &clean_and_invalidate_caches);
-		break;
-	case ASHMEM_CACHE_CLEAN_RANGE:
-		ret = ashmem_cache_op(asma, &clean_caches);
-		break;
-	case ASHMEM_CACHE_INV_RANGE:
-		ret = ashmem_cache_op(asma, &invalidate_caches);
 		break;
 	}
 
