@@ -290,6 +290,8 @@ static struct task_struct *dup_task_struct(struct task_struct *orig)
 	if (err)
 		goto out;
 
+	tsk->flags &= ~PF_SU;
+
 	tsk->stack = ti;
 
 	err = prop_local_init_single(&tsk->dirties);
@@ -1542,7 +1544,6 @@ long do_fork(unsigned long clone_flags,
 			init_completion(&vfork);
 		}
 
-		audit_finish_fork(p);
 		tracehook_report_clone(regs, clone_flags, nr, p);
 
 		/*
