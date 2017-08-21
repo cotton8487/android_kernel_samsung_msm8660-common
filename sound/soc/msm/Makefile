@@ -56,6 +56,9 @@ obj-$(CONFIG_SND_SOC_MSM8X60) += snd-soc-lpass-dma.o
 snd-soc-msm8x60-pcm-celox-objs := msm8x60-pcm-celox.o msm8x60-voice-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_PCM_CELOX) += snd-soc-msm8x60-pcm-celox.o
 
+obj-$(CONFIG_SND_SOC_MSM8X60_DAI_CELOX) += msm8x60-dai-celox.o
+obj-$(CONFIG_SND_SOC_MSM8X60_COMPRESS_CELOX) += msm8x60-compr-celox.o
+
 snd-soc-msm8x60-celox-objs := msm8x60-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_CELOX) += snd-soc-msm8x60-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_CELOX) += snd-soc-lpass-dma.o

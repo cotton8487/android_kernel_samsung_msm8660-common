@@ -2628,17 +2628,29 @@ struct platform_device msm_codec_dai2 = {
 	.name   = "msm-codec-dai",
 	.id     = 2,
 };
-struct platform_device msm_pcm_voice = {
-	.name	= "msm-pcm-voice",
+struct platform_device msm_compr_dsp = {
+	.name	= "msm-compr-dsp",
 	.id	= -1,
 };
-struct platform_device msm_cpu_dai3 = {
-	.name   = "msm-cpu-dai",
-	.id     = 3,
+struct platform_device msm_compr_dai = {
+	.name   = "msm-compr-dai",
+	.id     = -1,
 };
 struct platform_device msm_codec_dai3 = {
 	.name   = "msm-codec-dai",
 	.id     = 3,
+};
+struct platform_device msm_pcm_voice = {
+	.name	= "msm-pcm-voice",
+	.id	= -1,
+};
+struct platform_device msm_cpu_dai4 = {
+	.name   = "msm-cpu-dai",
+	.id     = 4,
+};
+struct platform_device msm_codec_dai4 = {
+	.name   = "msm-codec-dai",
+	.id     = 4,
 };
 #endif
 
