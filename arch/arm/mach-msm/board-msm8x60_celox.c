@@ -9327,14 +9327,12 @@ static struct platform_device *asoc_devices[] __initdata = {
 	&msm_pcm_dsp2,
 	&msm_cpu_dai2,
 	&msm_codec_dai2,
-	&msm_pcm_voice,
-	&msm_cpu_dai3,
+	&msm_compr_dsp,
+	&msm_compr_dai,
 	&msm_codec_dai3,
-#endif
-#if defined (CONFIG_MSM_8x60_VOIP)
-	&asoc_msm_mvs,
-	&asoc_mvs_dai0,
-	&asoc_mvs_dai1,
+	&msm_pcm_voice,
+	&msm_cpu_dai4,
+	&msm_codec_dai4,
 #endif
 };
 
@@ -9378,6 +9376,11 @@ static struct platform_device *surf_devices[] __initdata = {
 #endif
 #if defined(CONFIG_BATTERY_MAX17040) || defined(CONFIG_CHARGER_SMB328A)
 	&fg_smb_i2c_gpio_device,
+#endif
+#if defined (CONFIG_MSM_8x60_VOIP)
+	&asoc_msm_mvs,
+	&asoc_mvs_dai0,
+	&asoc_mvs_dai1,
 #endif
 #ifdef CONFIG_BATTERY_SEC
 	&sec_device_battery,

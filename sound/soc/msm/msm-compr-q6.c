@@ -280,14 +280,12 @@ static int msm_compr_open(struct snd_pcm_substream *substream)
 		kfree(prtd);
 		return -ENOMEM;
 	}
-	prtd->audio_client->perf_mode = false;
 	runtime->hw = msm_compr_hardware_playback;
 
 	pr_info("%s: session ID %d\n", __func__, prtd->audio_client->session);
 
 	prtd->session_id = prtd->audio_client->session;
 	msm_pcm_routing_reg_phy_stream(soc_prtd->dai_link->be_id,
-			prtd->audio_client->perf_mode,
 			prtd->session_id, substream->stream);
 
 	prtd->cmd_ack = 1;
@@ -461,10 +459,11 @@ static int msm_compr_ioctl(struct snd_pcm_substream *substream,
 		pr_debug("SNDRV_COMPRESS_TSTAMP\n");
 
 		memset(&tstamp, 0x0, sizeof(struct snd_compr_tstamp));
-		rc = q6asm_get_session_time(prtd->audio_client, &timestamp);
-		if (rc < 0) {
-			pr_err("%s: fail to get session tstamp\n", __func__);
-			return rc;
+		timestamp = q6asm_get_session_time(prtd->audio_client);
+		if (timestamp < 0) {
+			pr_err("%s: Get Session Time return value =%lld\n",
+				__func__, timestamp);
+			return -EAGAIN;
 		}
 		temp = (timestamp * 2 * runtime->channels);
 		temp = temp * (runtime->rate/1000);

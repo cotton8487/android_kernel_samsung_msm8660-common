@@ -44,6 +44,7 @@ static u32 bus_bw_resp_received;
 #ifdef CONFIG_DEBUG_FS
 static struct dentry *dentry;
 #endif
+
 static char l_buf[4096];
 
 static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
@@ -337,7 +338,7 @@ static ssize_t apr_debug_write(struct file *file, const char __user *buf,
 		if (apr_handle_q)
 			apr_deregister(apr_handle_q);
 	} else if (!strncmp(l_buf + 20, "loaded", 64)) {
-		change_q6_state(APR_Q6_LOADED);
+		apr_set_q6_state(APR_SUBSYS_LOADED);
 	} else if (!strncmp(l_buf + 20, "boom", 64)) {
 		q6audio_dsp_not_responding();
 	} else if (!strncmp(l_buf + 20, "dsp_ver", 64)) {

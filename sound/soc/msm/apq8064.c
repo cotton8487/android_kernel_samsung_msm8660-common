@@ -21,7 +21,6 @@
 #include <sound/core.h>
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
-#include <sound/soc-dsp.h>
 #include <sound/pcm.h>
 #include <sound/jack.h>
 #include <asm/mach-types.h>
@@ -700,7 +699,7 @@ static int msm_audrx_init(struct snd_soc_pcm_runtime *rtd)
 
 	rtd->pmdown_time = 0;
 
-	err = snd_soc_add_controls(codec, tabla_msm_controls,
+	err = snd_soc_add_codec_controls(codec, tabla_msm_controls,
 				ARRAY_SIZE(tabla_msm_controls));
 	if (err < 0)
 		return err;

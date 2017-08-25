@@ -145,7 +145,6 @@ config ARCH_MSM8960
 	select MSM_RPM
 	select MSM_XO
 	select MSM_QDSP6_APR
-	select MSM_QDSP6_CODECS
 	select MSM_PIL
 	select MSM_AUDIO_QDSP6 if SND_SOC
 	select CPU_HAS_L2_PMU
@@ -187,7 +186,6 @@ config ARCH_MSM8930
 	select MSM_RPM
 	select MSM_XO
 	select MSM_QDSP6_APR
-	select MSM_QDSP6_CODECS
 	select MSM_PIL
 	select MSM_AUDIO_QDSP6 if SND_SOC
 	select CPU_HAS_L2_PMU
@@ -225,7 +223,6 @@ config ARCH_APQ8064
 	select MSM_REMOTE_SPINLOCK_SFPB
 	select MSM_PIL
 	select MSM_QDSP6_APR
-	select MSM_QDSP6_CODECS
 	select MSM_AUDIO_QDSP6 if SND_SOC
 	select MULTI_IRQ_HANDLER
 	select MSM_PM8X60 if PM
@@ -2046,6 +2043,7 @@ config MSM_QDSP6_CODECS
 	  application processor and QDSP6. APR is
 	  used by audio driver to configure QDSP6's
 	  ASM, ADM and AFE.
+
 
 config MSM_AUDIO_QDSP6
         bool "QDSP6 HW Audio support"

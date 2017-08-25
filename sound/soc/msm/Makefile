@@ -56,6 +56,9 @@ obj-$(CONFIG_SND_SOC_MSM8X60) += snd-soc-lpass-dma.o
 snd-soc-msm8x60-pcm-celox-objs := msm8x60-pcm-celox.o msm8x60-voice-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_PCM_CELOX) += snd-soc-msm8x60-pcm-celox.o
 
+obj-$(CONFIG_SND_SOC_MSM8X60_DAI_CELOX) += msm8x60-dai-celox.o
+obj-$(CONFIG_SND_SOC_MSM8X60_COMPRESS_CELOX) += msm8x60-compr-celox.o
+
 snd-soc-msm8x60-celox-objs := msm8x60-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_CELOX) += snd-soc-msm8x60-celox.o
 obj-$(CONFIG_SND_SOC_MSM8X60_CELOX) += snd-soc-lpass-dma.o
@@ -63,14 +66,13 @@ obj-$(CONFIG_SND_SOC_MSM8X60_CELOX) += snd-soc-lpass-dma.o
 # for MSM 8960 sound card driver
 
 obj-$(CONFIG_SND_SOC_MSM_QDSP6_INTF) += qdsp6/
-
-snd-soc-qdsp6-objs := msm-dai-q6.o msm-pcm-q6.o msm-multi-ch-pcm-q6.o msm-lowlatency-pcm-q6.o msm-pcm-routing.o msm-dai-fe.o msm-compr-q6.o
+snd-soc-qdsp6-objs := msm-dai-q6.o msm-pcm-q6.o msm-multi-ch-pcm-q6.o msm-lowlatency-pcm-q6.o msm-pcm-loopback.o msm-pcm-routing.o msm-dai-fe.o msm-compr-q6.o msm-dai-stub.o
 obj-$(CONFIG_SND_SOC_MSM_QDSP6_HDMI_AUDIO) += msm-dai-q6-hdmi.o
 obj-$(CONFIG_SND_SOC_VOICE) += msm-pcm-voice.o msm-pcm-voip.o
 snd-soc-qdsp6-objs += msm-pcm-lpa.o msm-pcm-afe.o
 obj-$(CONFIG_SND_SOC_QDSP6) += snd-soc-qdsp6.o
 
-snd-soc-msm8960-objs := msm8960.o apq8064.o
+snd-soc-msm8960-objs := msm8960.o
 obj-$(CONFIG_SND_SOC_MSM8960) += snd-soc-msm8960.o
 
 # Generic MSM drivers
