@@ -27,7 +27,9 @@
 #ifdef SENSORS_LOG_DUMP
 #include <linux/i2c/sensors_core.h>
 #endif
-
+#ifdef CONFIG_TARGET_SERIES_CELOX
+#include <mach/board-msm8x60_celox.h>
+#endif
 
 #define k3dh_dbgmsg(str, args...) pr_debug("%s: " str, __func__, ##args)
 
@@ -115,16 +117,6 @@ static int k3dh_read_accel_raw_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
  || defined(CONFIG_USA_MODEL_SGH_I717) || defined(CONFIG_EUR_MODEL_GT_I9210) || defined(CONFIG_USA_MODEL_SGH_I957) \
  || defined(CONFIG_USA_MODEL_SGH_I757)|| defined (CONFIG_USA_MODEL_SGH_T769) || defined(CONFIG_USA_MODEL_SGH_I577)
 extern unsigned int get_hw_rev(void);
-#endif
-
-#ifdef CONFIG_TARGET_SERIES_CELOX
-enum {
-	SGH_I727 = 0,
-	SGH_T989,
-	XXX_XXXX,
-};
-
-static int model = SGH_I727;
 #endif
 
 static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
@@ -238,14 +230,14 @@ static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
 #endif
 
 #ifdef CONFIG_TARGET_SERIES_CELOX
-	if (model == SGH_I727)
+	if (get_celox_model() == SGH_I727)
 	{
 		if (get_hw_rev() >= 0x04)
 		{
 			acc->x = -(acc->x);
 			acc->z = -(acc->z);
 		}
-	} else if (model == SGH_T989) {
+	} else if (get_celox_model() == SGH_T989) {
 		s16 temp = acc->x;
 		acc->x = -(acc->y);
 		acc->y = (temp);
@@ -649,36 +641,11 @@ static ssize_t k3dh_calibration_store(struct device *dev, struct device_attribut
 	return count;
 }
 
-#ifdef CONFIG_TARGET_SERIES_CELOX
-static ssize_t k3dh_model_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	return sprintf(buf, "%d\n", model);
-}
-
-static ssize_t k3dh_model_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
-{
-	int data_buf;
-	int ret = sscanf(buf, "%d", &data_buf);
-
-	if (ret != 1)
-		return -EINVAL;
-
-	model = data_buf;
-
-	return count;
-}
-#endif
-
 static DEVICE_ATTR(calibration, 0664,
 		   k3dh_calibration_show, k3dh_calibration_store);
 static DEVICE_ATTR(acc_file, 0664, k3dh_fs_read, NULL);
 
 static DEVICE_ATTR(acc_hwrev, 0664, hwrev_read_for_sensor, NULL);
-
-#ifdef CONFIG_TARGET_SERIES_CELOX
-static DEVICE_ATTR(model, 0664,
-		   k3dh_model_show, k3dh_model_store);
-#endif
 
 static int k3dh_probe(struct i2c_client *client,
 		       const struct i2c_device_id *id)
@@ -777,14 +744,6 @@ static int k3dh_probe(struct i2c_client *client,
 		goto err_acc_device_create_file_hwrev;  
 	}
 
-#ifdef CONFIG_TARGET_SERIES_CELOX
-	err = device_create_file(dev_t, &dev_attr_model);
-	if (err < 0) {
-		pr_err("%s: Failed to create device file(%s)\n",
-				__func__, dev_attr_model.attr.name);
-		device_remove_file(dev_t, &dev_attr_model);
-	}
-#endif
 	dev_set_drvdata(dev_t, k3dh);
 
 	/* creating device for calibration */
