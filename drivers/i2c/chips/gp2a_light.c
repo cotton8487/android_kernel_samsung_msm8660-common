@@ -40,6 +40,10 @@
 #include <linux/i2c/sensors_core.h>
 #endif
 
+#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+#include <mach/board-msm8x60_celox.h>
+#endif
+
 /* for debugging */
 #define DEBUG 0
 
@@ -95,28 +99,28 @@ struct sensor_data {
 #endif
 };
 
-#if defined (CONFIG_USA_MODEL_SGH_T989)
-static const int adc_table[4] = {
+#if defined (CONFIG_USA_MODEL_SGH_T989) || defined (CONFIG_USA_MODEL_SGH_I727)
+static const int adc_table_T989[4] = {
 	230,
 	670,
 	1150,
 	1600,
 };
-#elif defined(CONFIG_USA_MODEL_SGH_I727)
-static const int adc_table[4] = {
+
+static const int adc_table_I727[4] = {
 	360,
 	798,
 	1240,
 	1673,
 };
-#else
+#endif
+
 static const int adc_table[4] = {
 	15,
 	163,
 	1650,
 	15700,
 };
-#endif
 
 #ifdef MSM_LIGHTSENSOR_ADC_READ
 //extern int __devinit msm_lightsensor_init_rpc(void);
@@ -599,9 +603,21 @@ static void gp2a_work_func_light(struct work_struct *work)
 
 	adc = lightsensor_get_adcvalue();
 
+#if defined (CONFIG_USA_MODEL_SGH_T989) || defined (CONFIG_USA_MODEL_SGH_I727)
+	if (get_celox_model() == SGH_I727) {
+		for (i = 0; ARRAY_SIZE(adc_table_I727); i++)
+			if (adc <= adc_table_I727[i])
+				break;
+	} else if (get_celox_model() == SGH_T989) {
+		for (i = 0; ARRAY_SIZE(adc_table_T989); i++)
+			if (adc <= adc_table_T989[i])
+				break;
+	}
+#else
 	for (i = 0; ARRAY_SIZE(adc_table); i++)
 		if (adc <= adc_table[i])
 			break;
+#endif
 
 	if (data->light_buffer == i) {
 #if defined(CONFIG_KOR_MODEL_SHV_E160S) || defined(CONFIG_KOR_MODEL_SHV_E160K) || defined(CONFIG_KOR_MODEL_SHV_E160L)
@@ -615,9 +631,8 @@ static void gp2a_work_func_light(struct work_struct *work)
 		if(data->light_level_state <= i || data->light_first_level == true){
 			if (data->light_count++ == LIGHT_BUFFER_UP) {
                 if (LightSensor_Log_Cnt == 10) {
-                    #ifndef CONFIG_USA_MODEL_SGH_T989
-                    printk("[LIGHT SENSOR] lux up 0x%0X (%d)\n", adc, adc);
-                    #endif
+                    if (get_celox_model() != SGH_T989)
+                        printk("[LIGHT SENSOR] lux up 0x%0X (%d)\n", adc, adc);
                     LightSensor_Log_Cnt = 0; 
                 }
 

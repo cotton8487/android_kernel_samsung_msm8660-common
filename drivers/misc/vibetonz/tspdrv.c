@@ -52,6 +52,9 @@
 #if defined(VIBE_DEBUG) && defined(VIBE_RECORD)
 #include <tspdrvRecorder.c>
 #endif
+#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+#include <mach/board-msm8x60_celox.h>
+#endif
 
 #if defined(CONFIG_USA_MODEL_SGH_T989D) || defined(CONFIG_KOR_MODEL_SHV_E160S) || defined(CONFIG_KOR_MODEL_SHV_E160K) ||defined(CONFIG_KOR_MODEL_SHV_E160L)
 #define VIBE_MINOR 250
@@ -910,16 +913,16 @@ static int resume(struct platform_device *pdev)
 				gpio_set_value(VIB_EN, VIBRATION_ON);		
 				vibrator_write_register(0x30, 0x09);
 				vibrator_write_register(0x31, 0x40);
-				#if defined (CONFIG_USA_MODEL_SGH_T989)
-				if (get_hw_rev() >= 0x0d)
-					vibrator_write_register(0x34, 0x01);
-				else				
-					vibrator_write_register(0x34, 0x16);
-				#elif defined (CONFIG_USA_MODEL_SGH_T769)
-				    vibrator_write_register(0x34, 0x17);
-				#else
-				vibrator_write_register(0x34, 0x19);
-				#endif
+				if (get_celox_model() == SGH_T989) {
+					if (get_hw_rev() >= 0x0d)
+						vibrator_write_register(0x34, 0x01);
+					else
+						vibrator_write_register(0x34, 0x16);
+				} else if (get_celox_model() == SGH_T769) {
+					vibrator_write_register(0x34, 0x17);
+				} else {
+					vibrator_write_register(0x34, 0x19);
+				}
 				vibrator_write_register(0x35, 0x00);	
 				vibrator_write_register(0x36, 0x00);
 	

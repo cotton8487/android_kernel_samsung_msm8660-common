@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017, Dave Antoine <bryan2894@gmail.com>
+ * Copyright (C) 2017, The LineageOS Project
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -17,6 +17,7 @@
 enum {
 	SGH_I727 = 0,
 	SGH_T989,
+	SGH_T769,
 	XXX_XXXX,
 };
 

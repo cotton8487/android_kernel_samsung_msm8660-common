@@ -39,6 +39,9 @@
 #include <linux/regulator/consumer.h>
 #include <linux/delay.h>
 
+#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+#include <mach/board-msm8x60_celox.h>
+#endif
 
 #ifdef IMMVIBESPIAPI
 #undef IMMVIBESPIAPI
@@ -274,16 +277,16 @@ int vib_isa1200_onoff(u8 onoff)
 #elif defined(CONFIG_USA_MODEL_SGH_T989) || defined(CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
 		vibrator_write_register(0x30, 0x89);
 		vibrator_write_register(0x31, 0x40);
-        #if defined (CONFIG_USA_MODEL_SGH_T989) && !defined (CONFIG_USA_MODEL_SGH_T769)
+		if (get_celox_model() == SGH_T989) {
 			if (get_hw_rev() >= 0x0d)
 				vibrator_write_register(0x34, 0x01);
-			else				
+			else
 				vibrator_write_register(0x34, 0x16);
-        #elif  defined (CONFIG_USA_MODEL_SGH_T769)
-		        vibrator_write_register(0x34, 0x17);
-		#else
+		} else if (get_celox_model() == SGH_T769) {
+			vibrator_write_register(0x34, 0x17);
+		} else {
 			vibrator_write_register(0x34, 0x19);
-			#endif
+		}
 		vibrator_write_register(0x35, 0x00);	
 		vibrator_write_register(0x36, 0x00);
 #elif defined (CONFIG_USA_MODEL_SGH_I717) || defined(CONFIG_USA_MODEL_SGH_I757)
@@ -497,31 +500,6 @@ IMMVIBESPIAPI VibeStatus ImmVibeSPI_ForceOut_Initialize(void)
 		vibrator_write_register(0x34, 0x02);
 		vibrator_write_register(0x35, 0x00);
 		vibrator_write_register(0x36, 0x00);    
-#elif defined (CONFIG_USA_MODEL_SGH_T989) 
-	if (get_hw_rev() > 0x04 ){	
-		vibrator_write_register(0x30, 0x09);
-		vibrator_write_register(0x31, 0x40);
-		if (get_hw_rev() >= 0x0d)
-			vibrator_write_register(0x34, 0x01);
-		else				
-			vibrator_write_register(0x34, 0x16);
-		vibrator_write_register(0x35, 0x00);	
-		vibrator_write_register(0x36, 0x00);
-	}
-#elif defined (CONFIG_USA_MODEL_SGH_T769)
-	vibrator_write_register(0x30, 0x09);
-	vibrator_write_register(0x31, 0x40);
-	vibrator_write_register(0x34, 0x17);
-	vibrator_write_register(0x35, 0x00);	
-	vibrator_write_register(0x36, 0x00);
-#elif defined (CONFIG_USA_MODEL_SGH_I727)
-		if (get_hw_rev() > 0x04 ){	
-		vibrator_write_register(0x30, 0x09);
-		vibrator_write_register(0x31, 0x40);
-		vibrator_write_register(0x34, 0x19);
-		vibrator_write_register(0x35, 0x00);	
-		vibrator_write_register(0x36, 0x00);
-	}	
 #elif defined (CONFIG_USA_MODEL_SGH_I717) || defined(CONFIG_USA_MODEL_SGH_I757)
 
         vibrator_write_register(0x30, 0x09);
@@ -537,6 +515,33 @@ IMMVIBESPIAPI VibeStatus ImmVibeSPI_ForceOut_Initialize(void)
 		vibrator_write_register(0x34, 0x19);
 		vibrator_write_register(0x35, 0x00);	
 		vibrator_write_register(0x36, 0x00);
+	}
+#elif defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+	if (get_celox_model() == SGH_T989) {
+		if (get_hw_rev() > 0x04 ) {
+			vibrator_write_register(0x30, 0x09);
+			vibrator_write_register(0x31, 0x40);
+			if (get_hw_rev() >= 0x0d)
+				vibrator_write_register(0x34, 0x01);
+			else
+				vibrator_write_register(0x34, 0x16);
+			vibrator_write_register(0x35, 0x00);
+			vibrator_write_register(0x36, 0x00);
+		}
+	} else if (get_celox_model() == SGH_T769) {
+		vibrator_write_register(0x30, 0x09);
+		vibrator_write_register(0x31, 0x40);
+		vibrator_write_register(0x34, 0x17);
+		vibrator_write_register(0x35, 0x00);
+		vibrator_write_register(0x36, 0x00);
+	} else if (get_celox_model() == SGH_I727) {
+		if (get_hw_rev() > 0x04 ) {
+			vibrator_write_register(0x30, 0x09);
+			vibrator_write_register(0x31, 0x40);
+			vibrator_write_register(0x34, 0x19);
+			vibrator_write_register(0x35, 0x00);
+			vibrator_write_register(0x36, 0x00);
+		}
 	}
 #endif
 

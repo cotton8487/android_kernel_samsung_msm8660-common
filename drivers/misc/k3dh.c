@@ -222,16 +222,10 @@ static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
 		acc->y = (temp);
 		acc->z = (acc->z);
 	}
-#elif defined (CONFIG_USA_MODEL_SGH_T769)
-	{
-		acc->x = -(acc->x);
-		acc->y = -(acc->y);
-	}
 #endif
 
-#ifdef CONFIG_TARGET_SERIES_CELOX
-	if (get_celox_model() == SGH_I727)
-	{
+#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+	if (get_celox_model() == SGH_I727) {
 		if (get_hw_rev() >= 0x04)
 		{
 			acc->x = -(acc->x);
@@ -242,6 +236,9 @@ static int k3dh_read_accel_xyz(struct k3dh_data *k3dh, struct k3dh_acc *acc)
 		acc->x = -(acc->y);
 		acc->y = (temp);
 		acc->z = (acc->z);
+	} else if (get_celox_model() == SGH_T769) {
+		acc->x = -(acc->x);
+		acc->y = -(acc->y);
 	}
 #endif
 

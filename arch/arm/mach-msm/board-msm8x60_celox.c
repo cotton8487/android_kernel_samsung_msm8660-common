@@ -14147,7 +14147,15 @@ static int mipi_S6E8AA0_panel_power(int enable)
 }
 #endif
 
+#if defined (CONFIG_USA_MODEL_SGH_I727)
 int model = SGH_I727;
+#elif defined (CONFIG_USA_MODEL_SGH_T989)
+int model = SGH_T989;
+#elif defined (CONFIG_USA_MODEL_SGH_T769)
+int model = SGH_T769;
+#else
+int model = XXX_XXXX;
+#endif
 module_param(model, int, 0664);
 
 int get_celox_model(void)
