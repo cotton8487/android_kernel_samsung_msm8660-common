@@ -39,7 +39,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/delay.h>
 
-#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769)
+#if defined (CONFIG_USA_MODEL_SGH_T989)|| defined (CONFIG_USA_MODEL_SGH_I727) || defined (CONFIG_USA_MODEL_SGH_T769) || defined (CONFIG_JPN_MODEL_SC_03D)
 #include <mach/board-msm8x60_celox.h>
 #endif
 
