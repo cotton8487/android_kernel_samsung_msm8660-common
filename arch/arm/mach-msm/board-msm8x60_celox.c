@@ -138,6 +138,7 @@
 #include <mach/restart.h>
 #include <mach/board-msm8660.h>
 #include <mach/devices-lte.h>
+#include <mach/board-msm8x60_celox.h>
 
 #include "devices.h"
 #include "devices-msm8x60.h"
@@ -14219,6 +14220,24 @@ static int mipi_S6E8AA0_panel_power(int enable)
     return ret;
 }
 #endif
+
+#if defined (CONFIG_USA_MODEL_SGH_I727)
+int model = SGH_I727;
+#elif defined (CONFIG_USA_MODEL_SGH_T989)
+int model = SGH_T989;
+#elif defined (CONFIG_USA_MODEL_SGH_T769)
+int model = SGH_T769;
+#elif defined (CONFIG_JPN_MODEL_SC_03D)
+int model = SC_03D;
+#else
+int model = XXX_XXXX;
+#endif
+module_param(model, int, 0664);
+
+int get_celox_model(void)
+{
+	return model;
+}
 
 int panel_uv = 250;
 module_param(panel_uv, int, 0664);
